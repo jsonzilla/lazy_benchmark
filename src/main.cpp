@@ -6,59 +6,33 @@
 
 #pragma optimize( "g", off )
 
-double factorial(double n)
+long double factorial(long double n)
 {
   return (n == 1.0 || n == 0.0) ? 1.0 : factorial(n - 1.0) * n;
 }
 
-static auto val = lazy{
-  return factorial(22);
+auto var = []() {
+  return factorial(132);
 };
 
-static auto var = [](){
-  return factorial(22);
+auto val = lazy{
+  return var();
 };
 
 static void Standard(benchmark::State& state) {
-    int number = 6;
-    if (state.thread_index == 0) {
-      number = 6;
-    }
+    if (state.thread_index == 0) {}
     while (state.KeepRunning()) {
-      int i = 100;
-      auto val = [number](){
-        return number;
-      };
-
-      while (i > 0) {
-        --i;
-        number = i % 2;
-      }
+      auto x = var() + 1.0;
     }
-    if (state.thread_index == 0) {
-    
-    }
+    if (state.thread_index == 0) {}
 }
 
 static void StandardLazy(benchmark::State& state) {
-  int number = 6;
-  if (state.thread_index == 0) {
-    number = 6;
-  }
+  if (state.thread_index == 0) {}
   while (state.KeepRunning()) {
-      int i = 100;
-      auto val = lazy{
-        return number;
-      };
-
-      while (i > 0) {
-        --i;
-        number = i % 2;
-      }    
+    auto x = val + 1.0;
   }
-  if (state.thread_index == 0) {
-    // Teardown
-  }
+  if (state.thread_index == 0) {}
 }
 
 BENCHMARK(Standard)->Repetitions(2);
